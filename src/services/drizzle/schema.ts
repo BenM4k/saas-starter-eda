@@ -2,6 +2,13 @@ import { text, boolean, pgTable, timestamp, pgEnum } from "drizzle-orm/pg-core";
 import { createId } from "@paralleldrive/cuid2";
 import { relations } from "drizzle-orm";
 
+export const priorityEnum = pgEnum("priority", ["low", "medium", "high"]);
+export const statusEnum = pgEnum("status", [
+  "pending",
+  "in progress",
+  "completed",
+]);
+
 export const users = pgTable("users", {
   id: text("id")
     .$defaultFn(() => createId())
@@ -17,9 +24,6 @@ export const users = pgTable("users", {
   }),
 });
 
-const priorityEnum = pgEnum("priority", ["low", "medium", "high"]);
-const statusEnum = pgEnum("status", ["pending", "in progress", "completed"]);
-
 export const todos = pgTable("todos", {
   id: text("id")
     .$defaultFn(() => createId())
@@ -31,6 +35,7 @@ export const todos = pgTable("todos", {
   userId: text("user_id")
     .notNull()
     .references(() => users.id),
+  dueDate: timestamp("due_date", { mode: "date" }),
   createdAt: timestamp("created_at", {
     mode: "date",
   }).defaultNow(),
@@ -46,6 +51,6 @@ export const usersRelations = relations(users, ({ many }) => ({
 export const todosRelations = relations(todos, ({ one }) => ({
   user: one(users, {
     fields: [todos.userId],
-    references: [users.id],
+    references: [users.clerkId],
   }),
 }));

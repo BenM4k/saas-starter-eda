@@ -1,27 +1,38 @@
 import "server-only";
 import { db } from "@/services/drizzle/drizzle";
-import { users } from "@/services/drizzle/schema";
-import { eq } from "drizzle-orm";
-import { auth } from "@clerk/nextjs/server";
+import { todos } from "@/services/drizzle/schema";
+import { eq, and } from "drizzle-orm";
+import { connectedUserId, getCurrentUserId } from "../users/queries";
+import { TodoStatus } from "@/types/todos";
 
-export async function existingUser({ clerkId }: { clerkId: string }) {
-  const user = await db
-    .select()
-    .from(users)
-    .where(eq(users.clerkId, clerkId))
-    .limit(1)
-    .then((res) => res.length > 0);
-  return user;
-}
+export async function getAllTodos(filter: TodoStatus) {
+  const clerkId = await connectedUserId();
+  const userId = await getCurrentUserId(clerkId);
 
-export async function connectedUserId() {
-  const { isAuthenticated, userId } = await auth();
-  if (!isAuthenticated) throw new Error("Unauthenticated");
-  const userExists = await existingUser({ clerkId: userId });
+  const conditions = [eq(todos.userId, userId)];
 
-  if (!userExists) {
-    throw new Error("Invalid user");
+  if (filter !== "all") {
+    conditions.push(eq(todos.status, filter));
   }
 
-  return userId;
+  const userTodos = await db
+    .select()
+    .from(todos)
+    .where(and(...conditions));
+
+  return userTodos;
+}
+
+export async function getTodoById(id: string) {
+  const clerkId = await connectedUserId();
+
+  const todo = await db.select().from(todos).where(eq(todos.id, id));
+
+  return todo[0];
+}
+
+export async function checkOwnership(userId: string, id: string) {
+  const todo = await db.select().from(todos).where(eq(todos.id, id)).limit(1);
+
+  return todo[0].userId === userId;
 }

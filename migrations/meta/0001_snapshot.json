@@ -1,6 +1,6 @@
 {
-  "id": "8041bc6e-7286-4fee-adc6-c65d2a3ba713",
-  "prevId": "7543b2fa-43e4-4075-bbd5-f670aeda55e1",
+  "id": "dabe428d-c2ff-4567-9927-f55613fd12ab",
+  "prevId": "e5050ab2-3734-4313-893f-a00858f97587",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -20,18 +20,39 @@
           "primaryKey": false,
           "notNull": true
         },
-        "competed": {
-          "name": "competed",
-          "type": "boolean",
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "priority": {
+          "name": "priority",
+          "type": "priority",
+          "typeSchema": "public",
           "primaryKey": false,
           "notNull": true,
-          "default": false
+          "default": "'low'"
+        },
+        "status": {
+          "name": "status",
+          "type": "status",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'pending'"
         },
         "user_id": {
           "name": "user_id",
           "type": "text",
           "primaryKey": false,
           "notNull": true
+        },
+        "due_date": {
+          "name": "due_date",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
         },
         "created_at": {
           "name": "created_at",
@@ -148,7 +169,26 @@
       "isRLSEnabled": false
     }
   },
-  "enums": {},
+  "enums": {
+    "public.priority": {
+      "name": "priority",
+      "schema": "public",
+      "values": [
+        "low",
+        "medium",
+        "high"
+      ]
+    },
+    "public.status": {
+      "name": "status",
+      "schema": "public",
+      "values": [
+        "pending",
+        "in progress",
+        "completed"
+      ]
+    }
+  },
   "schemas": {},
   "sequences": {},
   "roles": {},

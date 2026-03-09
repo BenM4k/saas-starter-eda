@@ -1,5 +1,5 @@
 "use client";
-
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -8,9 +8,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import { useRouter } from "next/navigation";
+import { createTodoSchemaType } from "@/types/todos";
+import { createTodoSchema } from "@/schemas/todos";
+import { useForm } from "react-hook-form";
+import { CustomFormField } from "../auth/formfield";
+import { createTodoAction } from "@/actions/todos.action";
+import { toast } from "sonner";
 
 interface CreateTodoDialogProps {
   open: boolean;
@@ -21,6 +25,35 @@ export function CreateTodoDialog({
   open,
   onOpenChange,
 }: CreateTodoDialogProps) {
+  const router = useRouter();
+  const defaultDueDate = new Date();
+  defaultDueDate.setDate(defaultDueDate.getDate() + 15);
+
+  const form = useForm<createTodoSchemaType>({
+    resolver: zodResolver(createTodoSchema),
+    defaultValues: {
+      title: "",
+      description: "",
+      dueDate: defaultDueDate.toISOString().split("T")[0],
+      priority: "low",
+      status: "pending",
+    },
+  });
+
+  const handleCreate = form.handleSubmit(async (values) => {
+    console.log(values);
+    const res = await createTodoAction(values);
+
+    if (!res.data) {
+      toast.error(res.message);
+      return;
+    } else {
+      toast.success(`Task: ${res.data.title} created`);
+      router.refresh();
+      onOpenChange(false);
+      form.reset();
+    }
+  });
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="border-border bg-card sm:max-w-[425px]">
@@ -32,49 +65,42 @@ export function CreateTodoDialog({
             Add a new task to your list. Fill out the details below.
           </DialogDescription>
         </DialogHeader>
-        <form className="space-y-4">
+        <form className="space-y-4" onSubmit={handleCreate}>
           <div className="space-y-2">
-            <Label htmlFor="title" className="text-card-foreground">
-              Title
-            </Label>
-            <Input
-              id="title"
-              placeholder="Enter task title"
-              className="border-border bg-muted text-foreground placeholder:text-muted-foreground"
+            <CustomFormField
+              control={form.control}
+              name="title"
+              label="Title"
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="description" className="text-card-foreground">
-              Description
-            </Label>
-            <Textarea
-              id="description"
-              placeholder="Enter task description"
-              className="min-h-[80px] border-border bg-muted text-foreground placeholder:text-muted-foreground"
+            <CustomFormField
+              control={form.control}
+              name="description"
+              fieldType="textarea"
+              rows={6}
             />
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="priority" className="text-card-foreground">
-                Priority
-              </Label>
-              <select
-                id="priority"
-                className="w-full rounded-md border border-border bg-muted px-3 py-2 text-sm text-foreground"
-              >
-                <option value="low">Low</option>
-                <option value="medium">Medium</option>
-                <option value="high">High</option>
-              </select>
+              <CustomFormField
+                control={form.control}
+                name="priority"
+                fieldType="select"
+                label="Priority"
+                selectOptions={[
+                  { name: "Low", value: "low" },
+                  { name: "Medium", value: "medium" },
+                  { name: "High", value: "high" },
+                ]}
+              />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="dueDate" className="text-card-foreground">
-                Due Date
-              </Label>
-              <Input
-                id="dueDate"
+              <CustomFormField
+                control={form.control}
+                name="dueDate"
                 type="date"
-                className="border-border bg-muted text-foreground"
+                label="Due date"
               />
             </div>
           </div>

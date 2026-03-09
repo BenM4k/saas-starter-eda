@@ -1,5 +1,5 @@
 {
-  "id": "7543b2fa-43e4-4075-bbd5-f670aeda55e1",
+  "id": "e5050ab2-3734-4313-893f-a00858f97587",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -20,12 +20,27 @@
           "primaryKey": false,
           "notNull": true
         },
-        "competed": {
-          "name": "competed",
-          "type": "boolean",
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "priority": {
+          "name": "priority",
+          "type": "priority",
+          "typeSchema": "public",
           "primaryKey": false,
           "notNull": true,
-          "default": false
+          "default": "'low'"
+        },
+        "status": {
+          "name": "status",
+          "type": "status",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'pending'"
         },
         "user_id": {
           "name": "user_id",
@@ -50,10 +65,10 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "todos_user_id_user_id_fk": {
-          "name": "todos_user_id_user_id_fk",
+        "todos_user_id_users_id_fk": {
+          "name": "todos_user_id_users_id_fk",
           "tableFrom": "todos",
-          "tableTo": "user",
+          "tableTo": "users",
           "columnsFrom": [
             "user_id"
           ],
@@ -70,8 +85,8 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.user": {
-      "name": "user",
+    "public.users": {
+      "name": "users",
       "schema": "",
       "columns": {
         "id": {
@@ -128,15 +143,15 @@
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
-        "user_clerk_id_unique": {
-          "name": "user_clerk_id_unique",
+        "users_clerk_id_unique": {
+          "name": "users_clerk_id_unique",
           "nullsNotDistinct": false,
           "columns": [
             "clerk_id"
           ]
         },
-        "user_email_unique": {
-          "name": "user_email_unique",
+        "users_email_unique": {
+          "name": "users_email_unique",
           "nullsNotDistinct": false,
           "columns": [
             "email"
@@ -148,7 +163,26 @@
       "isRLSEnabled": false
     }
   },
-  "enums": {},
+  "enums": {
+    "public.priority": {
+      "name": "priority",
+      "schema": "public",
+      "values": [
+        "low",
+        "medium",
+        "high"
+      ]
+    },
+    "public.status": {
+      "name": "status",
+      "schema": "public",
+      "values": [
+        "pending",
+        "in progress",
+        "completed"
+      ]
+    }
+  },
   "schemas": {},
   "sequences": {},
   "roles": {},
