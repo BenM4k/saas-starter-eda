@@ -36,3 +36,13 @@ export async function getCurrentUserId(clerkId: string) {
 
   return userId;
 }
+
+export async function getUserFromDb(clerkId: string) {
+  const user = await db
+    .select()
+    .from(users)
+    .where(eq(users.clerkId, clerkId))
+    .limit(1)
+    .then((res) => res[0]);
+  return user;
+}

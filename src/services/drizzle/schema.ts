@@ -8,6 +8,11 @@ export const statusEnum = pgEnum("status", [
   "in progress",
   "completed",
 ]);
+export const subscriptionEnum = pgEnum("subscription_type", [
+  "free",
+  "pro",
+  "team",
+]);
 
 export const users = pgTable("users", {
   id: text("id")
@@ -19,6 +24,9 @@ export const users = pgTable("users", {
   lastName: text("last_name").notNull(),
   imageUrl: text("image_url"),
   isSubscribe: boolean("is_subscribe").default(false).notNull(),
+  subscriptionType: subscriptionEnum("subscription_type")
+    .default("free")
+    .notNull(),
   subscriptionEnds: timestamp("subscription_ends", {
     mode: "date",
   }),

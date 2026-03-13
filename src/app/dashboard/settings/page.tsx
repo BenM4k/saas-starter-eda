@@ -8,7 +8,7 @@ export default function UserSettingsPage() {
       title="Settings"
       description="Manage your account settings and subscription"
     >
-      <div className="mx-auto max-w-3xl">
+      <div className="mx-auto max-w-4xl">
         <UserSettingsForm />
       </div>
     </DashboardLayout>
