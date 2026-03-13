@@ -3,6 +3,7 @@ import { NextRequest } from "next/server";
 import { db } from "@/services/drizzle/drizzle";
 import { users } from "@/services/drizzle/schema";
 import { eq } from "drizzle-orm";
+import { clerkClient } from "@clerk/nextjs/server";
 
 export async function POST(req: NextRequest) {
   try {
@@ -28,6 +29,14 @@ export async function POST(req: NextRequest) {
         })
         .onConflictDoNothing()
         .returning({ id: users.id, first_name: users.firstName });
+
+      const { users: clerkUsers } = await clerkClient();
+
+      const res = await clerkUsers.updateUser(id, {
+        publicMetadata: {
+          role: "user",
+        },
+      });
 
       console.log("New user", newUser);
     }

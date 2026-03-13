@@ -1,6 +1,6 @@
 "use server";
 
-import { connectedUserId } from "@/dal/todos/queries";
+import { connectedUserId } from "@/dal/users/queries";
 import { db } from "@/services/drizzle/drizzle";
 import { users } from "@/services/drizzle/schema";
 import { eq } from "drizzle-orm";

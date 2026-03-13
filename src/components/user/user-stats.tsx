@@ -1,25 +1,32 @@
 import { CheckCircle, Clock, ListTodo } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import { getAllTodos } from "@/dal/todos/queries";
+import { waitFor } from "@/lib/utils";
 
-const stats = [
-  {
-    name: "Total Tasks",
-    value: "12",
-    icon: ListTodo,
-  },
-  {
-    name: "In Progress",
-    value: "5",
-    icon: Clock,
-  },
-  {
-    name: "Completed",
-    value: "7",
-    icon: CheckCircle,
-  },
-];
+export async function UserStats() {
+  await waitFor(3000);
+  const todos = await getAllTodos("all");
+  const todosInProgress = todos.filter((t) => t.status === "in progress");
+  const completedTodos = todos.filter((t) => t.status === "completed");
 
-export function UserStats() {
+  const stats = [
+    {
+      name: "Total Tasks",
+      value: todos.length,
+      icon: ListTodo,
+    },
+    {
+      name: "In Progress",
+      value: todosInProgress.length,
+      icon: Clock,
+    },
+    {
+      name: "Completed",
+      value: completedTodos.length,
+      icon: CheckCircle,
+    },
+  ];
+
   return (
     <div className="grid gap-4 sm:grid-cols-3">
       {stats.map((stat) => (

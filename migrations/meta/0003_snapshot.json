@@ -1,6 +1,6 @@
 {
-  "id": "dabe428d-c2ff-4567-9927-f55613fd12ab",
-  "prevId": "e5050ab2-3734-4313-893f-a00858f97587",
+  "id": "6d4a5f74-d0ec-40d8-af35-70861ba0411e",
+  "prevId": "adf0a016-d439-4109-907c-c2445a35c44f",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -138,6 +138,14 @@
           "notNull": true,
           "default": false
         },
+        "subscription_type": {
+          "name": "subscription_type",
+          "type": "subscription_type",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'free'"
+        },
         "subscription_ends": {
           "name": "subscription_ends",
           "type": "timestamp",
@@ -186,6 +194,15 @@
         "pending",
         "in progress",
         "completed"
+      ]
+    },
+    "public.subscription_type": {
+      "name": "subscription_type",
+      "schema": "public",
+      "values": [
+        "free",
+        "pro",
+        "team"
       ]
     }
   },

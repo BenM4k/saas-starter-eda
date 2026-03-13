@@ -18,8 +18,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { adminLinks, userLinks } from "@/constants/dashboard";
-import { useClerk } from "@clerk/nextjs";
+import { useClerk, useUser } from "@clerk/nextjs";
 import { useTransition } from "react";
+import { ModeToggle } from "../mode-toggle";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -42,6 +43,10 @@ export function DashboardLayout({
     role === "admin" ? "/admin/settings" : "/dashboard/settings";
 
   const links = role === "admin" ? adminLinks : userLinks;
+  const { user } = useUser();
+  const firstName = user?.firstName ?? "Custom";
+  const lastName = user?.lastName ?? "User";
+  const initials = firstName[0] + lastName[0];
 
   return (
     <div className="min-h-screen bg-background">
@@ -81,50 +86,55 @@ export function DashboardLayout({
               </nav>
             </div>
 
-            <DropdownMenu>
-              <DropdownMenuTrigger className="flex items-center gap-2 rounded-md px-2 py-1.5 text-sm font-medium text-foreground transition-colors hover:bg-muted focus:outline-none">
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-muted text-sm font-medium text-muted-foreground">
-                  {role === "admin" ? "A" : "J"}
-                </div>
-                <span className="hidden sm:block">
-                  {role === "admin" ? "Admin" : "John Doe"}
-                </span>
-                <ChevronDown className="h-4 w-4 text-muted-foreground" />
-              </DropdownMenuTrigger>
-              <DropdownMenuContent
-                align="end"
-                className="w-48 border-border bg-popover"
-              >
-                <DropdownMenuItem
-                  asChild
-                  className="gap-2 text-popover-foreground"
+            <div className="flex items-center gap-4">
+              <DropdownMenu>
+                <DropdownMenuTrigger className="flex items-center gap-2 rounded-md px-2 py-1.5 text-sm font-medium text-foreground transition-colors hover:bg-muted focus:outline-none">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-muted text-sm font-medium text-muted-foreground">
+                    {role === "admin" ? "Admin" : initials}
+                  </div>
+                  <span className="hidden sm:block">
+                    {role === "admin"
+                      ? "Admin"
+                      : `${user?.firstName} ${user?.lastName}`}
+                  </span>
+                  <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                </DropdownMenuTrigger>
+                <DropdownMenuContent
+                  align="end"
+                  className="w-48 border-border bg-popover"
                 >
-                  <Link href={settingsPath}>
-                    <Settings className="h-4 w-4" />
-                    Settings
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator className="bg-border" />
-                <DropdownMenuItem
-                  className="gap-2 text-destructive"
-                  onClick={() =>
-                    startTransition(() => {
-                      signOut({ redirectUrl: "/" });
-                    })
-                  }
-                >
-                  {isPending ? (
-                    <Loader className="size-4 animate-spin" />
-                  ) : (
-                    <>
-                      <LogOut className="h-4 w-4" />
+                  <DropdownMenuItem
+                    asChild
+                    className="gap-2 text-popover-foreground"
+                  >
+                    <Link href={settingsPath}>
+                      <Settings className="h-4 w-4" />
+                      Settings
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator className="bg-border" />
+                  <DropdownMenuItem
+                    className="gap-2 text-destructive"
+                    onClick={() =>
+                      startTransition(() => {
+                        signOut({ redirectUrl: "/" });
+                      })
+                    }
+                  >
+                    {isPending ? (
+                      <Loader className="size-4 animate-spin" />
+                    ) : (
+                      <>
+                        <LogOut className="h-4 w-4" />
 
-                      <span>Logout</span>
-                    </>
-                  )}
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+                        <span>Logout</span>
+                      </>
+                    )}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+              <ModeToggle />
+            </div>
           </div>
         </div>
       </header>
